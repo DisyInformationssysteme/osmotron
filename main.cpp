@@ -1,8 +1,6 @@
 #include <iostream>
 #include <fstream>
 
-#include "easylogging++.h"
-
 #include <osmium/area/assembler.hpp>
 #include <osmium/area/multipolygon_collector.hpp>
 #include <osmium/geom/wkt.hpp>
@@ -13,51 +11,85 @@
 typedef osmium::index::map::SparseMemArray<osmium::unsigned_object_id_type, osmium::Location> index_type;
 typedef osmium::handler::NodeLocationsForWays<index_type> location_handler_type;
 
+#define ELPP_NO_DEFAULT_LOG_FILE
+#define ELPP_UNICODE
+#include "easylogging++.h"
 INITIALIZE_EASYLOGGINGPP
+
 
 using namespace std;
 
 class ExportToWKTHandler : public osmium::handler::Handler {
 
+private:
     osmium::geom::WKTFactory<> m_factory;
+    fstream fs;
+
+    string toString(const osmium::TagList &list) {
+        return "[mad tagz]";
+    }
 
 public:
 
+    ExportToWKTHandler() {
+        fs.open("result.csv", fstream::out);
+        fs << "id;type;tag;wkt\n";
+    }
+
     void node(const osmium::Node& node) {
-        LOG(TRACE) << 'n' << node.id() << ' ' << m_factory.create_point(node);
+        string wkt = m_factory.create_point(node);
+        fs << node.id() << ";" << "node" << ";" << toString(node.tags()) << ";" << wkt << "\n";
+        LOG(TRACE) << 'n' << node.id() << ' ' << wkt;
     }
 
     void way(const osmium::Way& way) {
         try {
-            LOG(TRACE) << 'w' << way.id() << ' ' << m_factory.create_linestring(way);
-        } catch (osmium::geometry_error&) {
-            // ignore broken geometries (such as ways with only a single node)
+            string wkt = m_factory.create_linestring(way);
+            fs << way.id() << ";" << "way" << ";" << toString(way.tags()) << ";" << wkt << "\n";
+            LOG(TRACE) << 'w' << way.id() << ' ' << wkt;
+        } catch (osmium::geometry_error& e) {
+            LOG(ERROR) << "Geometry with id " << way.id() << " is broken: " << e.what();
         }
     }
 
     void area(const osmium::Area& area) {
         try {
-            LOG(TRACE) << 'a' << area.id() << ' ' << m_factory.create_multipolygon(area);
-        } catch (osmium::geometry_error&) {
-            // ignore broken geometries (such as illegal multipolygons)
+            string wkt = m_factory.create_multipolygon(area);
+            fs << area.id() << ";" << "area" << ";" << toString(area.tags()) << ";" << wkt << "\n";
+            LOG(TRACE) << 'a' << area.id() << ' ' << wkt;
+        } catch (osmium::geometry_error& e) {
+            LOG(ERROR) << "Geometry with id " << area.id() << " is broken: " << e.what();
         }
     }
 
 };
 
+void exportWkt(string input_filename, osmium::area::MultipolygonCollector<osmium::area::Assembler>& collector) {
+    TIMED_SCOPE(timerObj, "exportWkt");
+
+    index_type index;
+    location_handler_type location_handler(index);
+    ExportToWKTHandler export_handler;
+
+    osmium::io::Reader reader2(input_filename);
+    osmium::apply(reader2, location_handler, export_handler, collector.handler([&export_handler](const osmium::memory::Buffer& buffer) {
+        osmium::apply(buffer, export_handler);
+    }));
+}
+
 int main(int argc, char* argv[]) {
     // Configure logger
+    START_EASYLOGGINGPP(argc, argv);
     el::Configurations conf("logging.conf");
     el::Loggers::reconfigureAllLoggers(conf);
 
     if (argc != 2) {
-        std::cerr << "Usage: " << argv[0] << " OSMFILE\n";
+        cerr << "Usage: " << argv[0] << " OSMFILE\n";
         LOG(FATAL) << "Usage: " << argv[0] << " OSMFILE";
         exit(1);
     }
 
-    std::string input_filename {argv[1]};
-
+    string input_filename {argv[1]};
     osmium::area::Assembler::config_type assembler_config;
     osmium::area::MultipolygonCollector<osmium::area::Assembler> collector(assembler_config);
 
@@ -66,14 +98,7 @@ int main(int argc, char* argv[]) {
     osmium::io::Reader reader1(input_filename);
     collector.read_relations(reader1);
 
-    index_type index;
-    location_handler_type location_handler(index);
-
     LOG(INFO) << "Converting file content to WKT...";
-    ExportToWKTHandler export_handler;
-    osmium::io::Reader reader2(input_filename);
-    osmium::apply(reader2, location_handler, export_handler, collector.handler([&export_handler](const osmium::memory::Buffer& buffer) {
-        osmium::apply(buffer, export_handler);
-    }));
+    exportWkt(input_filename, collector);
     LOG(INFO) << "File " << argv[1] << " successfully converted.";
 }
