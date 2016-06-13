@@ -26,7 +26,15 @@ private:
     fstream fs;
 
     string toString(const osmium::TagList &list) {
-        return "[mad tagz]";
+        string tags = "[";
+        for (auto& tag : list) {
+            tags.append(tag.key());
+            tags.append("=");
+            tags.append(tag.value());
+            tags.append(",");
+        }
+        tags += "]";
+        return tags;
     }
 
 public:
@@ -38,14 +46,14 @@ public:
 
     void node(const osmium::Node& node) {
         string wkt = m_factory.create_point(node);
-        fs << node.id() << ";" << "node" << ";" << toString(node.tags()) << ";" << wkt << "\n";
+        fs << to_string(node.id()) << ";" << "node" << ";" << toString(node.tags()) << ";" << wkt << "\n";
         LOG(TRACE) << 'n' << node.id() << ' ' << wkt;
     }
 
     void way(const osmium::Way& way) {
         try {
             string wkt = m_factory.create_linestring(way);
-            fs << way.id() << ";" << "way" << ";" << toString(way.tags()) << ";" << wkt << "\n";
+            fs << to_string(way.id()) << ";" << "way" << ";" << toString(way.tags()) << ";" << wkt << "\n";
             LOG(TRACE) << 'w' << way.id() << ' ' << wkt;
         } catch (osmium::geometry_error& e) {
             LOG(ERROR) << "Geometry with id " << way.id() << " is broken: " << e.what();
@@ -55,7 +63,7 @@ public:
     void area(const osmium::Area& area) {
         try {
             string wkt = m_factory.create_multipolygon(area);
-            fs << area.id() << ";" << "area" << ";" << toString(area.tags()) << ";" << wkt << "\n";
+            fs << to_string(area.id()) << ";" << "area" << ";" << toString(area.tags()) << ";" << wkt << "\n";
             LOG(TRACE) << 'a' << area.id() << ' ' << wkt;
         } catch (osmium::geometry_error& e) {
             LOG(ERROR) << "Geometry with id " << area.id() << " is broken: " << e.what();
@@ -84,8 +92,7 @@ int main(int argc, char* argv[]) {
     el::Loggers::reconfigureAllLoggers(conf);
 
     if (argc != 2) {
-        cerr << "Usage: " << argv[0] << " OSMFILE\n";
-        LOG(FATAL) << "Usage: " << argv[0] << " OSMFILE";
+        LOG(ERROR) << "Usage: " << argv[0] << " OSMFILE";
         exit(1);
     }
 
@@ -100,5 +107,5 @@ int main(int argc, char* argv[]) {
 
     LOG(INFO) << "Converting file content to WKT...";
     exportWkt(input_filename, collector);
-    LOG(INFO) << "File " << argv[1] << " successfully converted.";
+    LOG(INFO) << "File " << argv[1] << " successfully converted (see result.csv).";
 }
