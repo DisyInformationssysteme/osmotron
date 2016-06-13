@@ -1,4 +1,7 @@
 #include <iostream>
+#include <fstream>
+
+#include "easylogging++.h"
 
 #include <osmium/area/assembler.hpp>
 #include <osmium/area/multipolygon_collector.hpp>
@@ -10,6 +13,8 @@
 typedef osmium::index::map::SparseMemArray<osmium::unsigned_object_id_type, osmium::Location> index_type;
 typedef osmium::handler::NodeLocationsForWays<index_type> location_handler_type;
 
+INITIALIZE_EASYLOGGINGPP
+
 using namespace std;
 
 class ExportToWKTHandler : public osmium::handler::Handler {
@@ -19,12 +24,12 @@ class ExportToWKTHandler : public osmium::handler::Handler {
 public:
 
     void node(const osmium::Node& node) {
-        std::cout << 'n' << node.id() << ' ' << m_factory.create_point(node) << "\n";
+        LOG(TRACE) << 'n' << node.id() << ' ' << m_factory.create_point(node);
     }
 
     void way(const osmium::Way& way) {
         try {
-            std::cout << 'w' << way.id() << ' ' << m_factory.create_linestring(way) << "\n";
+            LOG(TRACE) << 'w' << way.id() << ' ' << m_factory.create_linestring(way);
         } catch (osmium::geometry_error&) {
             // ignore broken geometries (such as ways with only a single node)
         }
@@ -32,7 +37,7 @@ public:
 
     void area(const osmium::Area& area) {
         try {
-            std::cout << 'a' << area.id() << ' ' << m_factory.create_multipolygon(area) << "\n";
+            LOG(TRACE) << 'a' << area.id() << ' ' << m_factory.create_multipolygon(area);
         } catch (osmium::geometry_error&) {
             // ignore broken geometries (such as illegal multipolygons)
         }
@@ -41,8 +46,13 @@ public:
 };
 
 int main(int argc, char* argv[]) {
+    // Configure logger
+    el::Configurations conf("logging.conf");
+    el::Loggers::reconfigureAllLoggers(conf);
+
     if (argc != 2) {
         std::cerr << "Usage: " << argv[0] << " OSMFILE\n";
+        LOG(FATAL) << "Usage: " << argv[0] << " OSMFILE";
         exit(1);
     }
 
@@ -51,19 +61,19 @@ int main(int argc, char* argv[]) {
     osmium::area::Assembler::config_type assembler_config;
     osmium::area::MultipolygonCollector<osmium::area::Assembler> collector(assembler_config);
 
-    std::cerr << "Pass 1...\n";
+    LOG(INFO) << "Starting to process file " << argv[1];
+    LOG(INFO) << "Checking relations for osm file...";
     osmium::io::Reader reader1(input_filename);
     collector.read_relations(reader1);
-    std::cerr << "Pass 1 done\n";
 
     index_type index;
     location_handler_type location_handler(index);
 
-    std::cerr << "Pass 2...\n";
+    LOG(INFO) << "Converting file content to WKT...";
     ExportToWKTHandler export_handler;
     osmium::io::Reader reader2(input_filename);
     osmium::apply(reader2, location_handler, export_handler, collector.handler([&export_handler](const osmium::memory::Buffer& buffer) {
         osmium::apply(buffer, export_handler);
     }));
-    std::cerr << "Pass 2 done\n";
+    LOG(INFO) << "File " << argv[1] << " successfully converted.";
 }
