@@ -14,7 +14,7 @@ include_directories(SYSTEM ${Boost_INCLUDE_DIRS})
 find_package(Osmium REQUIRED COMPONENTS <io xml sparsehash>)
 include_directories(SYSTEM ${OSMIUM_INCLUDE_DIRS})
 
-set(SOURCE_FILES main.cpp LogginProblemReporter.h)
+set(SOURCE_FILES main.cpp LogginProblemReporter.h ExportHandler.h b64/base64.h b64/base64.cpp)
 set(PROG osmotron)
 add_executable(${PROG} ${SOURCE_FILES})
 target_link_libraries(${PROG} ${Boost_LIBRARIES} ${OSMIUM_LIBRARIES})
