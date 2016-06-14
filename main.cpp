@@ -8,6 +8,8 @@
 #include <osmium/index/map/sparse_mem_array.hpp>
 #include <osmium/handler/node_locations_for_ways.hpp>
 
+#include "LogginProblemReporter.h"
+
 #define ELPP_NO_DEFAULT_LOG_FILE
 #define ELPP_UNICODE
 #include "easylogging++.h"
@@ -71,7 +73,6 @@ public:
             LOG(ERROR) << "Geometry with id " << area.id() << " is broken: " << e.what();
         }
     }
-
 };
 
 void exportWkt(string input_filename, area::MultipolygonCollector<area::Assembler>& collector) {
@@ -97,9 +98,12 @@ int main(int argc, char* argv[]) {
         LOG(ERROR) << "Usage: " << argv[0] << " OSMFILE";
         exit(1);
     }
-
     string input_filename {argv[1]};
+
     area::Assembler::config_type assembler_config;
+    auto reporter = unique_ptr<area::ProblemReporter>(new LoggingProblemReporter());
+    assembler_config.problem_reporter = reporter.get();
+    assembler_config.check_roles = true;
     area::MultipolygonCollector<area::Assembler> collector(assembler_config);
 
     LOG(INFO) << "Starting to process file " << argv[1];
