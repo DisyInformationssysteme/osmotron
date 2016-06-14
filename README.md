@@ -1,5 +1,7 @@
 # Osmotron
 
+<a href="https://opensource.org/licenses/MIT"><img src="https://img.shields.io/badge/license-MIT-blue.svg"></a>
+
 This is a small command line tool that takes a OSM ([OpenStreetMap](https://www.openstreetmap.org)) file as input and creates a list of contained geometries as output.
 The output contains the geometries in the following formats: WKT, WKB (base64 encoded), GeoJSON
 
