@@ -34,6 +34,7 @@ private:
             tags.append(",");
         }
         tags += "]";
+        replace(tags.begin(), tags.end(), ';', ':'); // to protect the csv format
         return tags;
     }
 
