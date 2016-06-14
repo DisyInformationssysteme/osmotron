@@ -32,6 +32,9 @@ private:
             tags.append(tag.value());
             tags.append(",");
         }
+        if (tags.length() > 1) {
+            tags.pop_back();
+        }
         tags += "]";
         replace(tags.begin(), tags.end(), ';', ':'); // to protect the csv format
         return tags;
@@ -41,7 +44,7 @@ public:
 
     ExportHandler() {
         fs.open("result.csv", fstream::out);
-        fs << "id;type;tag;wkt\n";
+        fs << "id;type;tag;wkt;wkb;geojson\n";
     }
 
     void node(const Node &node) {
