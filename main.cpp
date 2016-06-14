@@ -9,12 +9,7 @@
 #include <osmium/handler/node_locations_for_ways.hpp>
 
 #include "LogginProblemReporter.h"
-
-#define ELPP_NO_DEFAULT_LOG_FILE
-#define ELPP_UNICODE
-#include "easylogging++.h"
 INITIALIZE_EASYLOGGINGPP
-
 
 using namespace std;
 using namespace osmium;

@@ -2,6 +2,8 @@
 
 #include <string>
 #include <osmium/area/assembler.hpp>
+
+#define ELPP_NO_DEFAULT_LOG_FILE
 #include "easylogging++.h"
 
 using namespace osmium;
