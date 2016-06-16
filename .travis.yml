@@ -30,10 +30,12 @@ install:
   - if [ "$CXX" = "g++" ]; then export CXX="g++-4.8" CC="gcc-4.8"; fi
 
 before_script:
-  - cd $HOME/build/DisyInformationssysteme/osmotron
+  - cd $HOME
+  - git pull https://github.com/osmcode/libosmium
+  - cd build/DisyInformationssysteme/osmotron
   - mkdir -p bin
-  - $HOME/cmake/bin/cmake -version
-  - $HOME/cmake/bin/cmake $HOME/build/DisyInformationssysteme/osmotron
+  - cmake -version
+  - cmake -D OSMIUM_INCLUDE_DIRS=$HOME/home/libosmium/include $HOME/build/DisyInformationssysteme/osmotron
 
 script:
   - make
