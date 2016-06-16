@@ -11,6 +11,18 @@ In addition, it logs all possible geometry errors it encounters and warn about p
 This tool requires [Boost](http://www.boost.org/) and the [Osmium](http://osmcode.org/libosmium/) library to compile.
 For more details, have a look at the [dependencies](https://github.com/osmcode/libosmium/wiki/Libosmium-dependencies) required by Osmium.
 
+## Usage
+
+After you compiled the program you can use it as follows:
+
+```
+./osmotron <path-to-osm-file>
+```
+
+The result is a CSV text file `result.csv`, which contains the converted geometries.
+The WKB geometries are converted to base64.
+To change the log output, see the settings inside the `logging.conf` file.
+
 ---
 TL;DR:
 ### OSM -> WKT, WKB, GeoJSON
