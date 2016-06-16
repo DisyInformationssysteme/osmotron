@@ -41,7 +41,7 @@ before_script:
   - cd build/DisyInformationssysteme/osmotron
   - mkdir -p bin
   - $HOME/cmake/bin/cmake -version
-  - $HOME/cmake/bin/cmake -D OSMIUM_INCLUDE_DIRS=$HOME/home/libosmium/include $HOME/build/DisyInformationssysteme/osmotron
+  - $HOME/cmake/bin/cmake -D OSMIUM_INCLUDE_DIR=$HOME/libosmium/include $HOME/build/DisyInformationssysteme/osmotron
 
 script:
   - make
