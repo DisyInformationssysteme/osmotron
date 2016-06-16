@@ -31,7 +31,7 @@ install:
 
 before_script:
   - cd $HOME
-  - git pull https://github.com/osmcode/libosmium
+  - git clone https://github.com/osmcode/libosmium
   - cd build/DisyInformationssysteme/osmotron
   - mkdir -p bin
   - cmake -version
