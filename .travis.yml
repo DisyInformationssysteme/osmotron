@@ -11,6 +11,20 @@ addons:
     packages:
     - gcc-4.8
     - g++-4.8
+    - cmake
+    - cmake-curses-gui
+    - make
+    - libexpat1-dev
+    - zlib1g-dev
+    - libbz2-dev
+    - libsparsehash-dev
+    - libboost-dev
+    - libboost-program-options-dev
+    - libgdal-dev
+    - libgeos++-dev
+    - libproj-dev
+    - doxygen
+    - graphviz
 
 install:
   - if [ "$CXX" = "g++" ]; then export CXX="g++-4.8" CC="gcc-4.8"; fi
