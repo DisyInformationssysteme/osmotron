@@ -28,14 +28,20 @@ addons:
 
 install:
   - if [ "$CXX" = "g++" ]; then export CXX="g++-4.8" CC="gcc-4.8"; fi
+  - wget --no-check-certificate https://cmake.org/files/v3.3/cmake-3.3.2.tar.gz
+  - tar -xzvf cmake-3.3.2.tar.gz > /dev/null
+  - cd cmake-3.3.2
+  - ./configure --prefix=$HOME/cmake > /dev/null
+  - make > /dev/null
+  - make install
 
 before_script:
   - cd $HOME
   - git clone https://github.com/osmcode/libosmium
   - cd build/DisyInformationssysteme/osmotron
   - mkdir -p bin
-  - cmake -version
-  - cmake -D OSMIUM_INCLUDE_DIRS=$HOME/home/libosmium/include $HOME/build/DisyInformationssysteme/osmotron
+  - $HOME/cmake/bin/cmake -version
+  - $HOME/cmake/bin/cmake -D OSMIUM_INCLUDE_DIRS=$HOME/home/libosmium/include $HOME/build/DisyInformationssysteme/osmotron
 
 script:
   - make
