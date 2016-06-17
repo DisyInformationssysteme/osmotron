@@ -1,6 +1,7 @@
 cmake_minimum_required(VERSION 3.2)
 project(osmotron)
 
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -lboost_program_options")
 if (CMAKE_BUILD_TYPE MATCHES Debug)
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -g -O0 -Wall -Wextra")
 else ()
@@ -9,7 +10,7 @@ endif ()
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/bin")
 
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake")
-find_package(Boost REQUIRED)
+find_package(Boost COMPONENTS program_options REQUIRED)
 include_directories(SYSTEM ${Boost_INCLUDE_DIRS})
 find_package(Osmium REQUIRED COMPONENTS <io xml sparsehash>)
 include_directories(SYSTEM ${OSMIUM_INCLUDE_DIRS})
