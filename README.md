@@ -19,8 +19,13 @@ After you compiled the program you can use it as follows:
 ./osmotron <path-to-osm-file>
 ```
 
-The result is a CSV text file `result.csv`, which contains the converted geometries.
-The WKB geometries are converted to base64.
+To see all possible option, use the following:
+```
+./osmotron --help
+```
+
+The default result is a CSV text file `result.csv`, which contains the converted geometries.
+WKB geometries are converted to base64 (because binary and CSV don't mix very well).
 To change the log output, see the settings inside the `logging.conf` file.
 
 ---
