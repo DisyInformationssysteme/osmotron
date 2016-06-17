@@ -1,7 +1,7 @@
 # Osmotron
 
 <a href="http://www.boost.org/users/license.html"><img src="https://img.shields.io/badge/license-Boost-blue.svg"></a>
-[![Build Status](https://api.travis-ci.org/DisyInformationssysteme/osmotron.png)](https://travis-ci.org/DisyInformationssysteme/osmotron)
+[![Build Status](https://travis-ci.org/DisyInformationssysteme/osmotron.svg?branch=master)](https://travis-ci.org/DisyInformationssysteme/osmotron)
 
 This is a small command line tool that takes a OSM ([OpenStreetMap](https://www.openstreetmap.org)) file as input and creates a list of contained geometries as output.
 The output contains the geometries in the following formats: WKT, WKB (base64 encoded), GeoJSON
