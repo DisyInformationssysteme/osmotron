@@ -39,7 +39,11 @@ private:
             tags.pop_back();
         }
         tags += "]";
-        replace(tags.begin(), tags.end(), ';', ':'); // to protect the csv format
+
+        // protect the csv format against breaking characters
+        replace(tags.begin(), tags.end(), ';', ':');
+        replace(tags.begin(), tags.end(), '\n', ' ');
+        replace(tags.begin(), tags.end(), '\r', ' ');
         return tags;
     }
 
