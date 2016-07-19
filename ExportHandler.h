@@ -130,7 +130,7 @@ public:
             auto rawWkb = wkbFactory.create_multipolygon(area);
             string wkb = base64_encode(rawWkb.c_str(), static_cast<int>(rawWkb.length()));
             string gjs = gjsFactory.create_multipolygon(area);
-            fs << to_string(area.id()) << ";" << "area" << ";" << toString(area.tags());
+            fs << to_string(area.id()) << ";" << "area" << ";" << toString(area.tags()) << ";";
 
             LOG(TRACE) << "area " << area.id();
             if (outputGeometries.count("wkt")) {
